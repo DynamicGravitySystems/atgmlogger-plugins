@@ -38,11 +38,13 @@ AWSIoTPythonSDK (available from PyPi via pip)
 
 Notes
 -----
-Full line of data is approx 124 bytes, or approx 160 bytes when wrapped with JSON and device metadata
+Full line of data is approx 124 bytes, or approx 160 bytes when wrapped with 
+JSON and device metadata
 
 TODO
 ----
-Option to batch send data as Json list of maps (reduce IoT cost if each message < 5kb)
+Option to batch send data as Json list of maps (reduce IoT cost if each 
+message is < 5kb)
 
 
 MQTT Plugin configuration options:
@@ -237,7 +239,6 @@ class MQTTClient(PluginInterface):
 
                     item_json = json.dumps(
                         {'d': self.sensorid, 't': timestamp, 'v': data_dict})
-                    # Note: returns bool value on success/fail of publish (maybe useful to know)
                     self.client.publish(topic, item_json, 0)
                     self.task_done()
                 except:

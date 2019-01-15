@@ -15,7 +15,7 @@ requirements = [
 setup(
     name='atgmlogger-plugins',
     version=__version__,
-    packages=['atgmlogger-plugins'],
+    packages=['atgmlogger_plugins'],
     url='',
     license='',
     author='Zachery Brady',

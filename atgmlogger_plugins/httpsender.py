@@ -16,11 +16,9 @@ from urllib3 import Retry
 
 from . import PluginInterface
 
-
 __plugin__ = 'HTTPSender'
 
 LOG = logging.getLogger(__name__)
-
 
 _marine_fieldmap = ['header', 'gravity', 'long_acc', 'cross_acc', 'beam',
                     's_temperature', 'pressure', 'e_temperature',
@@ -34,6 +32,12 @@ def convert_time(meter_time):
         return datetime.strptime(meter_time, fmt).timestamp()
     except ValueError:
         return datetime.utcnow().timestamp()
+
+
+"""The HTTPSender plugin can send a structured JSON data packet to an 
+HTTP/S REST endpoint, useful for remotely collecting data when internet is
+available to the logging hardware.
+"""
 
 
 class HTTPSender(PluginInterface):
@@ -65,12 +69,15 @@ class HTTPSender(PluginInterface):
         extracted = {}
         data = data.split(',')
         if not len(data) == len(fieldmap):
-            LOG.error("Data and field-map lengths do not match.\nData: {data}".format(data=data))
+            LOG.error(
+                "Data and field-map lengths do not match.\nData: {data}".format(
+                    data=data))
             return None
         for i, field in enumerate(fieldmap):
             if field.lower() in cls.fields:
                 try:
-                    extracted[field] = cls._field_casts.get(field.lower(), int)(data[i])
+                    extracted[field] = cls._field_casts.get(field.lower(), int)(
+                        data[i])
                 except ValueError:
                     extracted[field] = data[i]
                 except IndexError:
@@ -96,10 +103,12 @@ class HTTPSender(PluginInterface):
                 LOG.debug("Got Sensor ID {} from server".format(sensor_id))
                 return sensor_id
             else:
-                LOG.debug("Sensor is not valid, attempting to create registration")
+                LOG.debug(
+                    "Sensor is not valid, attempting to create registration")
                 return self._register_sensor(session)
         else:
-            LOG.debug("Error connecting to server, status code: {}".format(resp.status_code))
+            LOG.debug("Error connecting to server, status code: {}".format(
+                resp.status_code))
             return -1
 
     def _register_sensor(self, session: requests.Session) -> int:
@@ -132,9 +141,12 @@ class HTTPSender(PluginInterface):
 
     def run(self):
         # NOTE: HTTP Sender only suitable for <= 1Hz data collection
+        # TODO: Add batch sending option
         session = requests.Session()
-        session.headers.update({'Authorization': 'Bearer: {key}'.format(key=self.apikey)})
-        retries = Retry(total=2, backoff_factor=1, status_forcelist=[502, 503, 504])
+        session.headers.update(
+            {'Authorization': 'Bearer: {key}'.format(key=self.apikey)})
+        retries = Retry(total=2, backoff_factor=1,
+                        status_forcelist=[502, 503, 504])
         session.mount('http://', HTTPAdapter(max_retries=retries))
         session.mount('https://', HTTPAdapter(max_retries=retries))
 
@@ -162,7 +174,9 @@ class HTTPSender(PluginInterface):
             resp = self._send_line(session, collector_uri, data)
             if resp.get('Status', 'FAIL') == 'OK':
                 self.task_done()
-                LOG.info("Send Status: {}, ID: {}".format(resp.get("Status"), resp.get('LineID', -1)))
+                LOG.info("Send Status: {}, ID: {}".format(resp.get("Status"),
+                                                          resp.get('LineID',
+                                                                   -1)))
             else:
                 LOG.warning("Send line failed")
                 LOG.warning(resp)
@@ -171,4 +185,3 @@ class HTTPSender(PluginInterface):
             LOG.error("HTTPSender unexpectedly exited.")
         else:
             LOG.info("HTTPSender exiting on exit signal.")
-

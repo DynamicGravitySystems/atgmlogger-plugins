@@ -115,6 +115,16 @@ def set_system_time(timestamp):
         return None
 
 
+"""The TimeSyncDaemon plugin monitors incoming sensor data and decodes valid
+GPS timestamps from the serial data stream. If a valid timestamp is available
+the plugin will periodically set the logger's system clock to the current time.
+
+If the monotonic option is true, timestamps are checked to ensure the time is
+greater than the current system time, so that the system time is never set to a
+point in the past.
+"""
+
+
 class TimeSyncDaemon(PluginDaemon):
     options = ['interval', 'monotonic']
     interval = 1000

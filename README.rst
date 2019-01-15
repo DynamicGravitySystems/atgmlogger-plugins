@@ -4,6 +4,19 @@ ATGMLogger-Plugins
 ATGMLogger-Plugins is a plugin package for the atgmlogger serial logging
 application, containing non-essential feature plugins to extend functionality.
 
+Build
+-----
+
+Execute:
+
+.. code-block::
+
+    # Build a wheel package (requires wheel: [pip install wheel])
+    python setup.py bdist_wheel
+
+    # or for a source distribution (tar.gz)
+    python setup.py sdist
+
 
 Installation
 ------------
