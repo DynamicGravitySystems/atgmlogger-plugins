@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-# This file is part of ATGMLogger https://github.com/bradyzp/atgmlogger
+# This file is part of atgmlogger-plugins
+# https://github.com/DynamicGravitySystems/atgmlogger-plugins
+# Licensed under the MIT License
+# (c) Zachery Brady, Dynamic Gravity Systems, 2018-2019
 
 import sys
 import shlex

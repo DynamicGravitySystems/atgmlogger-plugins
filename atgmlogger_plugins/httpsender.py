@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# This file is part of atgmlogger-plugins
+# https://github.com/DynamicGravitySystems/atgmlogger-plugins
+# Licensed under the MIT License
+# (c) Zachery Brady, Dynamic Gravity Systems, 2018-2019
+
 import logging
 from datetime import datetime
 from json import JSONDecodeError

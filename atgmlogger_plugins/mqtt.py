@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
-# This file is part of ATGMLogger https://github.com/bradyzp/atgmlogger
+# This file is part of atgmlogger-plugins
+# https://github.com/DynamicGravitySystems/atgmlogger-plugins
+# Licensed under the MIT License
+# (c) Zachery Brady, Dynamic Gravity Systems, 2018-2019
 
 import json
 import logging
@@ -13,9 +16,9 @@ LOG = logging.getLogger(__name__)
 try:
     from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 except ImportError:
-    LOG.exception("AWSIoTPythonSDK not available. Run pip install AWSIoTPythonSDK in the ATGMLogger environment.")
+    LOG.exception(
+        "AWSIoTPythonSDK not available. Run pip install AWSIoTPythonSDK in the ATGMLogger environment.")
     raise
-
 
 """
 MQTTClient Plugin (mqtt)
@@ -127,7 +130,8 @@ def convert_time(meter_time):
 
 
 class MQTTClient(PluginInterface):
-    options = ['sensorid', 'topicid', 'topic_pfx', 'endpoint', 'rootca', 'prikey', 'devcert', 'batch', 'interval',
+    options = ['sensorid', 'topicid', 'topic_pfx', 'endpoint', 'rootca',
+               'prikey', 'devcert', 'batch', 'interval',
                'fields', 'datafmt']
     topic_pfx = 'gravity'
     endpoint = None
@@ -139,8 +143,10 @@ class MQTTClient(PluginInterface):
     datafmt = 'marine'
 
     # Ordered list of marine fields
-    _marine_fieldmap = ['header', 'gravity', 'long', 'cross', 'beam', 'temp', 'pressure', 'etemp', 'vcc', 've', 'al',
-                        'ax', 'status', 'checksum', 'latitude', 'longitude', 'speed', 'course', 'datetime']
+    _marine_fieldmap = ['header', 'gravity', 'long', 'cross', 'beam', 'temp',
+                        'pressure', 'etemp', 'vcc', 've', 'al',
+                        'ax', 'status', 'checksum', 'latitude', 'longitude',
+                        'speed', 'course', 'datetime']
     _airborne_fieldmap = []
 
     # Defaults to integer cast if not specified here
@@ -170,7 +176,8 @@ class MQTTClient(PluginInterface):
         for i, field in enumerate(fieldmap):
             if field.lower() in cls.fields:
                 try:
-                    extracted[field] = cls._field_casts.get(field.lower(), int)(data[i])
+                    extracted[field] = cls._field_casts.get(field.lower(), int)(
+                        data[i])
                 except ValueError:
                     extracted[field] = data[i]
         return extracted
@@ -205,7 +212,8 @@ class MQTTClient(PluginInterface):
 
             topic = '/'.join([self.topic_pfx, topicid])
         except AttributeError:
-            LOG.exception("Missing attributes from configuration for MQTT plugin.")
+            LOG.exception(
+                "Missing attributes from configuration for MQTT plugin.")
             raise
         return topic
 
@@ -227,12 +235,15 @@ class MQTTClient(PluginInterface):
 
                     data_dict = self.extract_fields(item)
 
-                    item_json = json.dumps({'d': self.sensorid, 't': timestamp, 'v': data_dict})
+                    item_json = json.dumps(
+                        {'d': self.sensorid, 't': timestamp, 'v': data_dict})
                     # Note: returns bool value on success/fail of publish (maybe useful to know)
                     self.client.publish(topic, item_json, 0)
                     self.task_done()
                 except:
-                    LOG.exception("Exception occured in mqtt-run loop. Item value: %s", item)
+                    LOG.exception(
+                        "Exception occured in mqtt-run loop. Item value: %s",
+                        item)
                     self._errcount += 1
                     if self._errcount > 10:
                         # Terminate MQTT if errors accumulate
